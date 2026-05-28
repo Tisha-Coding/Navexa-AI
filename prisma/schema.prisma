@@ -1,0 +1,223 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  JOB_SEEKER
+  ADMIN
+}
+
+enum AnalysisStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+enum ApplicationStatus {
+  SAVED
+  APPLIED
+  INTERVIEW
+  OFFER
+  REJECTED
+}
+
+enum SkillRecoveryStatus {
+  PENDING
+  KNOWN
+  UNKNOWN
+}
+
+enum ProfilePlatform {
+  LEETCODE
+  GITHUB
+}
+
+enum LinkStatus {
+  WORKING
+  BROKEN
+  UNVERIFIABLE
+}
+
+enum BulletStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+}
+
+model User {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  passwordHash String
+  name         String
+  role         Role      @default(JOB_SEEKER)
+  image        String?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+
+  resumes      Resume[]
+  jobs         JobDescription[]
+  analyses     Analysis[]
+  applications Application[]
+
+  @@index([deletedAt])
+}
+
+model Resume {
+  id              String    @id @default(cuid())
+  userId          String
+  title           String
+  fileUrl         String
+  rawText         String
+  extractedSkills String[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses     Analysis[]
+  links        LinkCheck[]
+  profileScans ProfileScan[]
+
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+model JobDescription {
+  id              String    @id @default(cuid())
+  userId          String
+  title           String
+  company         String?
+  rawText         String
+  extractedSkills String[]
+  sourceUrl       String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  analyses     Analysis[]
+  applications Application[]
+
+  @@index([userId])
+  @@index([deletedAt])
+}
+
+model Analysis {
+  id               String         @id @default(cuid())
+  userId           String
+  resumeId         String
+  jobDescriptionId String
+
+  matchScore         Int
+  keywordScore       Int
+  semanticScore      Int
+
+  matchedSkills      String[]
+  missingSkills      String[]
+  summary            String
+
+  coverLetter        String?
+  interviewQuestions Json?
+
+  status             AnalysisStatus @default(PENDING)
+  createdAt          DateTime       @default(now())
+  updatedAt          DateTime       @updatedAt
+  deletedAt          DateTime?
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resume          Resume           @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+  jobDescription  JobDescription   @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
+  bulletRewrites  BulletRewrite[]
+  skillRecoveries SkillRecovery[]
+  applications    Application[]
+
+  @@index([userId])
+  @@index([resumeId])
+  @@index([jobDescriptionId])
+  @@index([status])
+  @@index([deletedAt])
+}
+
+model BulletRewrite {
+  id         String       @id @default(cuid())
+  analysisId String
+  original   String
+  rewritten  String
+  status     BulletStatus @default(PENDING)
+  createdAt  DateTime     @default(now())
+
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+  @@index([status])
+}
+
+model SkillRecovery {
+  id           String              @id @default(cuid())
+  analysisId   String
+  skill        String
+  status       SkillRecoveryStatus @default(PENDING)
+  userResponse String?
+  aiSuggestion String?
+  createdAt    DateTime            @default(now())
+
+  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
+
+  @@index([analysisId])
+}
+
+model ProfileScan {
+  id        String          @id @default(cuid())
+  resumeId  String
+  platform  ProfilePlatform
+  username  String
+  data      Json
+  scannedAt DateTime        @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+}
+
+model LinkCheck {
+  id         String     @id @default(cuid())
+  resumeId   String
+  url        String
+  status     LinkStatus @default(UNVERIFIABLE)
+  httpStatus Int?
+  checkedAt  DateTime   @default(now())
+
+  resume Resume @relation(fields: [resumeId], references: [id], onDelete: Cascade)
+
+  @@index([resumeId])
+}
+
+model Application {
+  id               String            @id @default(cuid())
+  userId           String
+  jobDescriptionId String?
+  analysisId       String?
+  company          String
+  position         String
+  status           ApplicationStatus @default(SAVED)
+  appliedDate      DateTime?
+  link             String?
+  notes            String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+
+  user           User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  jobDescription JobDescription? @relation(fields: [jobDescriptionId], references: [id], onDelete: SetNull)
+  analysis       Analysis?       @relation(fields: [analysisId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([status])
+  @@index([deletedAt])
+}
