@@ -1,9 +1,13 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import { put } from "@vercel/blob";
+import { createRequire } from "module";
 import { NextRequest, NextResponse } from "next/server";
-import * as pdfParse from "pdf-parse";
 import { z } from "zod";
+
+const require = createRequire(import.meta.url);
+// eslint-disable-next-line @typescript-eslint/no-require-imports
+const pdfParse = require("pdf-parse") as (buf: Buffer) => Promise<{ text: string }>;
 
 const uploadSchema = z.object({
   title: z.string().min(1).max(100),
@@ -84,7 +88,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileBuffer = await file.arrayBuffer();
-    const pdfData = await pdfParse.default(Buffer.from(fileBuffer));
+    const pdfData = await pdfParse(Buffer.from(fileBuffer));
     const rawText = pdfData.text;
     const extractedSkills = extractSkills(rawText);
 
