@@ -91,7 +91,7 @@ export async function POST(request: NextRequest) {
 
     const fileName = `resumes/${session.user.id}/${Date.now()}-${file.name}`;
     const blob = await put(fileName, Buffer.from(fileBuffer), {
-      access: "token",
+      access: "public",
       contentType: "application/pdf",
     });
 
