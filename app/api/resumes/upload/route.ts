@@ -84,7 +84,7 @@ export async function POST(request: NextRequest) {
     }
 
     const fileBuffer = await file.arrayBuffer();
-    const pdfData = await pdfParse(Buffer.from(fileBuffer));
+    const pdfData = await pdfParse.default(Buffer.from(fileBuffer));
     const rawText = pdfData.text;
     const extractedSkills = extractSkills(rawText);
 
