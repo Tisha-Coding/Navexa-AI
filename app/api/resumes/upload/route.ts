@@ -1,8 +1,8 @@
 import { auth } from "@/auth";
-import { db } from "@/lib/db";
+import { prisma } from "@/lib/db";
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
-import pdfParse from "pdf-parse";
+import * as pdfParse from "pdf-parse";
 import { z } from "zod";
 
 const uploadSchema = z.object({
@@ -94,7 +94,7 @@ export async function POST(request: NextRequest) {
       contentType: "application/pdf",
     });
 
-    const resume = await db.resume.create({
+    const resume = await prisma.resume.create({
       data: {
         userId: session.user.id,
         title: validation.data.title,
