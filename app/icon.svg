@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <!-- Rounded violet tile matching the dashboard logo (bg-violet-600) -->
+  <rect width="256" height="256" rx="56" fill="#7c3aed"/>
+
+  <!-- lucide "Sparkles": one large 4-point star + two small ones, in white -->
+  <g fill="#ffffff">
+    <!-- main star, centred -->
+    <path d="M132 60
+             C135 92 150 107 182 110
+             C150 113 135 128 132 160
+             C129 128 114 113 82 110
+             C114 107 129 92 132 60 Z"/>
+    <!-- small star top-right -->
+    <path d="M188 150
+             C189 163 195 169 208 170
+             C195 171 189 177 188 190
+             C187 177 181 171 168 170
+             C181 169 187 163 188 150 Z"/>
+    <!-- small star bottom-left -->
+    <path d="M78 168
+             C79 178 84 183 94 184
+             C84 185 79 190 78 200
+             C77 190 72 185 62 184
+             C72 183 77 178 78 168 Z"/>
+  </g>
+</svg>

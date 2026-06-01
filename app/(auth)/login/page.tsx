@@ -1,21 +1,29 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
+import { signIn, getSession } from "next-auth/react";
 import { Sparkles, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 function LoginForm() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const justRegistered = searchParams.get("registered") === "1";
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [forgotMsg, setForgotMsg] = useState(false);
+  const [showRegistered, setShowRegistered] = useState(justRegistered);
+
+  useEffect(() => {
+    if (!showRegistered) return;
+    const t = setTimeout(() => setShowRegistered(false), 4000);
+    return () => clearTimeout(t);
+  }, [showRegistered]);
 
   useEffect(() => {
     if (!error) return;
@@ -46,7 +54,11 @@ function LoginForm() {
       return;
     }
 
-    window.location.replace("/dashboard");
+    // Fetch the freshly-set session to check role, then redirect accordingly.
+    const session = await getSession();
+    const dest = session?.user?.role === "ADMIN" ? "/admin" : "/dashboard";
+    router.replace(dest);
+    router.refresh();
   }
 
   return (
@@ -84,12 +96,19 @@ function LoginForm() {
         </div>
 
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
-          {justRegistered && (
-            <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
-              <CheckCircle2 className="h-4 w-4 shrink-0" />
-              Account created. Please log in.
-            </div>
-          )}
+          <div
+            aria-live="polite"
+            className={`transition-all duration-300 ${
+              showRegistered ? "max-h-20 opacity-100" : "pointer-events-none max-h-0 opacity-0"
+            }`}
+          >
+            {showRegistered && (
+              <div className="flex items-center gap-2 rounded-lg border border-emerald-200 bg-emerald-50 px-3.5 py-2.5 text-sm text-emerald-700">
+                <CheckCircle2 className="h-4 w-4 shrink-0" />
+                Account created. Please log in.
+              </div>
+            )}
+          </div>
 
           <div
             aria-live="polite"

@@ -26,12 +26,6 @@ enum ApplicationStatus {
   REJECTED
 }
 
-enum SkillRecoveryStatus {
-  PENDING
-  KNOWN
-  UNKNOWN
-}
-
 enum ProfilePlatform {
   LEETCODE
   GITHUB
@@ -126,6 +120,7 @@ model Analysis {
   interviewQuestions Json?
 
   status             AnalysisStatus @default(PENDING)
+  failedReason       String?
   createdAt          DateTime       @default(now())
   updatedAt          DateTime       @updatedAt
   deletedAt          DateTime?
@@ -134,7 +129,6 @@ model Analysis {
   resume          Resume           @relation(fields: [resumeId], references: [id], onDelete: Cascade)
   jobDescription  JobDescription   @relation(fields: [jobDescriptionId], references: [id], onDelete: Cascade)
   bulletRewrites  BulletRewrite[]
-  skillRecoveries SkillRecovery[]
   applications    Application[]
 
   @@index([userId])
@@ -156,20 +150,6 @@ model BulletRewrite {
 
   @@index([analysisId])
   @@index([status])
-}
-
-model SkillRecovery {
-  id           String              @id @default(cuid())
-  analysisId   String
-  skill        String
-  status       SkillRecoveryStatus @default(PENDING)
-  userResponse String?
-  aiSuggestion String?
-  createdAt    DateTime            @default(now())
-
-  analysis Analysis @relation(fields: [analysisId], references: [id], onDelete: Cascade)
-
-  @@index([analysisId])
 }
 
 model ProfileScan {

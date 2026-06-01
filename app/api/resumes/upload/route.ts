@@ -1,64 +1,19 @@
 import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
+import { extractSkills } from "@/lib/extract-skills";
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
-import { PDFParse } from "pdf-parse";
+import { extractText, getDocumentProxy } from "unpdf";
 import { z } from "zod";
 
+const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+
 const uploadSchema = z.object({
-  title: z.string().min(1).max(100),
-  file: z.instanceof(File).refine((file) => file.type === "application/pdf", "File must be PDF"),
+  title: z.string().trim().min(4, "Title must be at least 4 characters").max(100),
+  file: z.instanceof(File)
+    .refine((file) => file.type === "application/pdf", "File must be PDF")
+    .refine((file) => file.size <= MAX_FILE_SIZE, "File too large — max 5MB"),
 });
-
-function extractSkills(text: string): string[] {
-  const commonSkills = [
-    "JavaScript",
-    "TypeScript",
-    "React",
-    "Next.js",
-    "Node.js",
-    "Express",
-    "Python",
-    "Java",
-    "C++",
-    "Go",
-    "Rust",
-    "SQL",
-    "PostgreSQL",
-    "MongoDB",
-    "Redis",
-    "Docker",
-    "Kubernetes",
-    "AWS",
-    "GCP",
-    "Azure",
-    "Git",
-    "REST",
-    "GraphQL",
-    "CSS",
-    "HTML",
-    "Tailwind",
-    "Prisma",
-    "Vitest",
-    "Jest",
-    "Playwright",
-    "CI/CD",
-    "Linux",
-    "Windows",
-    "macOS",
-  ];
-
-  const foundSkills = new Set<string>();
-  const lowerText = text.toLowerCase();
-
-  for (const skill of commonSkills) {
-    if (lowerText.includes(skill.toLowerCase())) {
-      foundSkills.add(skill);
-    }
-  }
-
-  return Array.from(foundSkills);
-}
 
 export async function POST(request: NextRequest) {
   try {
@@ -84,13 +39,16 @@ export async function POST(request: NextRequest) {
     }
 
     const fileBuffer = await file.arrayBuffer();
-    const parser = new PDFParse({ data: new Uint8Array(fileBuffer) });
-    const pdfData = await parser.getText();
-    const rawText = pdfData.text;
+    // Keep a separate copy for blob upload — unpdf transfers/detaches the
+    // ArrayBuffer it receives, which would leave the original unusable.
+    const blobBuffer = Buffer.from(fileBuffer);
+    const pdf = await getDocumentProxy(new Uint8Array(fileBuffer.slice(0)));
+    const { text } = await extractText(pdf, { mergePages: true });
+    const rawText = Array.isArray(text) ? text.join("\n") : text;
     const extractedSkills = extractSkills(rawText);
 
     const fileName = `resumes/${session.user.id}/${Date.now()}-${file.name}`;
-    const blob = await put(fileName, Buffer.from(fileBuffer), {
+    const blob = await put(fileName, blobBuffer, {
       access: "public",
       contentType: "application/pdf",
     });
