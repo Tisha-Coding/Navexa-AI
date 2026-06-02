@@ -58,16 +58,20 @@ Everything a job seeker needs, in one flow:
 - Upload resume (PDF) → instant skill extraction
 - Paste any JD → automatic required-skill detection
 - Run analysis → **Hybrid Match Score** (0–100%) with breakdown
-- See **matched skills** and **skill gaps** side-by-side
+- Results organized in **3 tabs** — Overview · AI Tools · Profile
 
-### AI Tools (per analysis)
+### Overview tab
+- See matched skills and skill gaps side-by-side
+- AI hiring-manager summary of your fit
+
+### AI Tools tab
 - **Bullet Rewriter** — AI rewrites up to 8 resume bullets aligned to the JD, one-click copy
 - **Cover Letter** — ≤220 words, no clichés, tailored to the role and company
 - **Interview Prep** — 8 questions (technical / behavioural / JD-specific / gap) with answer outlines
 
-### Profile Enrichment
-- **GitHub Scanner** — public repos sorted by stars, top languages, contribution stats
-- **LeetCode Scanner** — solved counts by difficulty, contest rating, language breakdown
+### Profile tab
+- **GitHub Scanner** — public repos sorted by stars, top languages, contribution stats. Auto-detects username from resume; manual override available anytime
+- **LeetCode Scanner** — solved counts by difficulty, contest rating, language breakdown. Auto-detects username from resume; manual override available anytime
 
 ### Application Tracker
 - Kanban board — drag cards across `Saved → Applied → Interview → Offer → Rejected`
@@ -194,11 +198,12 @@ navexa_ai/
 ├── components/
 │   ├── app-header.tsx          ← shared header with logout (all pages)
 │   ├── app-background.tsx      ← animated mesh background
+│   ├── analysis-tabs.tsx       ← tabbed layout for analysis detail (Overview / AI Tools / Profile)
 │   ├── bullet-rewriter.tsx     ← AI bullet rewrites panel
 │   ├── cover-letter.tsx        ← cover letter panel
 │   ├── interview-questions.tsx ← interview prep panel
-│   ├── github-scanner.tsx      ← GitHub profile panel
-│   ├── leetcode-scanner.tsx    ← LeetCode profile panel
+│   ├── github-scanner.tsx      ← GitHub profile panel (with username change)
+│   ├── leetcode-scanner.tsx    ← LeetCode profile panel (with username change)
 │   ├── providers.tsx           ← SessionProvider wrapper
 │   └── ui/                     ← shadcn primitives
 │
