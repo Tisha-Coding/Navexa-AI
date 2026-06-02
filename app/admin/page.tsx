@@ -1,8 +1,7 @@
 import { Suspense } from "react";
 import { auth, signOut } from "@/auth";
-import Link from "next/link";
 import { prisma } from "@/lib/db";
-import { Sparkles, LogOut, Users, FileText, BarChart3, AlertTriangle, ArrowLeft, Calendar } from "lucide-react";
+import { Sparkles, LogOut, Users, FileText, BarChart3, AlertTriangle, Calendar } from "lucide-react";
 import { AppBackground } from "@/components/app-background";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
@@ -30,12 +29,6 @@ export default async function AdminPage() {
           </div>
 
           <div className="flex items-center gap-3">
-            <Link href="/dashboard">
-              <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg border-slate-200 bg-white/70">
-                <ArrowLeft className="h-3.5 w-3.5" aria-hidden="true" />
-                Dashboard
-              </Button>
-            </Link>
             <form
               action={async () => {
                 "use server";

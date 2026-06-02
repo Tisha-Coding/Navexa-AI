@@ -17,12 +17,15 @@ export default auth((req) => {
     if (!isAdmin) return Response.redirect(new URL("/dashboard", req.nextUrl.origin));
   }
 
-  // Protected app routes — login required
+  // Protected app routes — login required, admin not allowed
   const protectedRoutes = ["/dashboard", "/resumes", "/jobs", "/analyses", "/applications"];
-  if (protectedRoutes.some((r) => pathname.startsWith(r)) && !isLoggedIn) {
-    const loginUrl = new URL("/login", req.nextUrl.origin);
-    loginUrl.searchParams.set("callbackUrl", pathname);
-    return Response.redirect(loginUrl);
+  if (protectedRoutes.some((r) => pathname.startsWith(r))) {
+    if (!isLoggedIn) {
+      const loginUrl = new URL("/login", req.nextUrl.origin);
+      loginUrl.searchParams.set("callbackUrl", pathname);
+      return Response.redirect(loginUrl);
+    }
+    if (isAdmin) return Response.redirect(new URL("/admin", req.nextUrl.origin));
   }
 
   // Redirect logged-in users away from auth pages
