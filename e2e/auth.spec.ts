@@ -19,7 +19,7 @@ test.describe("Authentication", () => {
 
   test("valid credentials redirect to dashboard", async ({ page }) => {
     const email = process.env.TEST_EMAIL ?? "aryan@gmail.com";
-    const password = process.env.TEST_PASSWORD ?? "Aryan@1234";
+    const password = process.env.TEST_PASSWORD ?? "Aryan123@#";
 
     await page.goto("/login");
     await page.locator('input[name="email"]').fill(email);

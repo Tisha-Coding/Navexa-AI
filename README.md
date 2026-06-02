@@ -123,7 +123,8 @@ PDF Parsing   unpdf (serverless-friendly, no worker issues)
 Drag & Drop   @dnd-kit/core (accessible, headless)
 Validation    Zod (API inputs + AI outputs)
 Hashing       bcryptjs (10 rounds)
-Deployment    Vercel (auto-deploy on push to main)
+Testing       Vitest (unit) + Playwright (E2E)
+CI/CD         GitHub Actions (type-check + tests + lint) + Vercel (auto-deploy)
 ```
 
 ---
@@ -281,6 +282,58 @@ UPDATE "User" SET role = 'ADMIN' WHERE email = 'your@email.com';
 ```
 
 Log out and log back in — you'll be redirected to `/admin` automatically.
+
+---
+
+## Testing
+
+### Unit Tests (Vitest)
+
+Covers the core deterministic logic — no mocks, no DB, pure functions:
+
+```bash
+npm test              # run once
+npm run test:watch    # watch mode
+```
+
+| File | What's tested |
+|---|---|
+| `lib/scoring/keyword-score.ts` | Perfect match, partial match, case-insensitive, extra skills, empty arrays |
+| `lib/extract-skills.ts` | Skill detection, word boundary guard, case-insensitive, multi-skill |
+| `lib/extract-profiles.ts` | GitHub/LeetCode URL patterns, PDF underscore-space fix, reserved paths |
+
+**28 tests · 3 test files · all passing**
+
+---
+
+### E2E Tests (Playwright)
+
+Tests real user flows in a headless Chrome browser against the live site:
+
+```bash
+npm run test:e2e       # run against live Vercel URL
+npm run test:e2e:ui    # interactive UI mode
+```
+
+| Test | What it verifies |
+|---|---|
+| Login page loads | Heading, email field, password field, submit button visible |
+| Unauthenticated redirect | `/dashboard` → redirects to `/login` |
+| Login flow | Valid credentials → redirects to `/dashboard` or `/admin` |
+
+**3 tests · all passing**
+
+---
+
+### CI — GitHub Actions
+
+Every push to `main` automatically runs:
+1. `prisma generate` — validate schema
+2. `npx tsc --noEmit` — TypeScript type-check
+3. `npm test` — unit tests
+4. `npm run lint` — ESLint
+
+If any step fails, the commit is marked ❌ on GitHub.
 
 ---
 
