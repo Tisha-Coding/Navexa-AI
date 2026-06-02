@@ -1,10 +1,11 @@
-import { auth, signOut } from "@/auth";
+import { auth } from "@/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Button } from "@/components/ui/button";
-import { Sparkles, LogOut, FileText, Briefcase, BarChart3, ArrowUpRight, KanbanSquare } from "lucide-react";
+import { FileText, Briefcase, BarChart3, ArrowUpRight, KanbanSquare } from "lucide-react";
 import { AppBackground } from "@/components/app-background";
+import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 
 export default async function DashboardPage() {
@@ -17,40 +18,7 @@ export default async function DashboardPage() {
     <main className="relative flex min-h-screen flex-col overflow-hidden bg-slate-50">
       <AppBackground />
 
-      {/* Top nav */}
-      <header className="relative z-10 border-b border-slate-200/70 bg-white/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          <div className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 shadow-sm">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-base font-semibold tracking-tight text-slate-900">Navexa AI</span>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="hidden text-right sm:block">
-              <div className="text-sm font-medium text-slate-900">{session?.user?.name}</div>
-              <div className="text-xs text-slate-500">{session?.user?.email}</div>
-            </div>
-            <form
-              action={async () => {
-                "use server";
-                await signOut({ redirectTo: "/login" });
-              }}
-            >
-              <Button
-                type="submit"
-                variant="outline"
-                size="sm"
-                className="h-9 gap-1.5 rounded-lg border-slate-200 bg-white/70 hover:bg-white"
-              >
-                <LogOut className="h-3.5 w-3.5" />
-                Logout
-              </Button>
-            </form>
-          </div>
-        </div>
-      </header>
+      <AppHeader />
 
       {/* Content */}
       <section className="relative z-10 mx-auto w-full max-w-6xl flex-1 px-6 py-10">

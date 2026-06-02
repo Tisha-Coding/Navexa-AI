@@ -18,6 +18,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { AppBackground } from "@/components/app-background";
+import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
 import { ConfirmDialog } from "@/components/ui/confirm-dialog";
 
@@ -110,23 +111,7 @@ export default function ResumesPage() {
         </div>
       )}
 
-      {/* Top nav */}
-      <header className="relative z-10 border-b border-slate-200/70 bg-white/70 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3.5">
-          <Link href="/dashboard" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-violet-600 shadow-sm">
-              <Sparkles className="h-4 w-4 text-white" />
-            </div>
-            <span className="text-base font-semibold tracking-tight text-slate-900">Navexa AI</span>
-          </Link>
-          <Link href="/dashboard">
-            <Button variant="outline" size="sm" className="h-9 gap-1.5 rounded-lg border-slate-200 bg-white/70">
-              <ArrowLeft className="h-3.5 w-3.5" />
-              Dashboard
-            </Button>
-          </Link>
-        </div>
-      </header>
+      <AppHeader backHref="/dashboard" />
 
       {/* Content */}
       <section className="relative z-10 mx-auto w-full max-w-6xl flex-1 px-6 py-10">
