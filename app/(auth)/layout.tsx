@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { AppBackground } from "@/components/app-background";
 import { AuthBrandPanel } from "@/components/auth-brand-panel";
+
+export const metadata: Metadata = {
+  title: "Navexa AI — Login",
+};
 
 // Shared layout for /login and /signup.
 // The brand panel stays mounted across navigations between the two routes,
