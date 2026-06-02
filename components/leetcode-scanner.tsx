@@ -11,6 +11,8 @@ import {
   Code2,
   Award,
   Globe,
+  Pencil,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -68,6 +70,7 @@ export function LeetcodeScannerPanel({ resumeId }: { resumeId: string }) {
   const [loading, setLoading] = useState(true);
   const [scanning, setScanning] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [changingUsername, setChangingUsername] = useState(false);
 
   const load = useCallback(async () => {
     try {
@@ -102,6 +105,7 @@ export function LeetcodeScannerPanel({ resumeId }: { resumeId: string }) {
       }
       setScan(data.scan.data);
       setOverride("");
+      setChangingUsername(false);
     } catch {
       setError("Network error");
     } finally {
@@ -122,16 +126,29 @@ export function LeetcodeScannerPanel({ resumeId }: { resumeId: string }) {
           </p>
         </div>
         {scan && (
-          <Button
-            onClick={runScan}
-            disabled={scanning}
-            size="sm"
-            variant="outline"
-            className="h-8 gap-1 rounded-md border-slate-200 text-xs"
-          >
-            {scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
-            Rescan
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={() => { setChangingUsername((v) => !v); setOverride(""); }}
+              size="sm"
+              variant="outline"
+              className="h-8 gap-1 rounded-md border-slate-200 text-xs"
+            >
+              {changingUsername ? <X className="h-3.5 w-3.5" /> : <Pencil className="h-3.5 w-3.5" />}
+              {changingUsername ? "Cancel" : "Change username"}
+            </Button>
+            {!changingUsername && (
+              <Button
+                onClick={runScan}
+                disabled={scanning}
+                size="sm"
+                variant="outline"
+                className="h-8 gap-1 rounded-md border-slate-200 text-xs"
+              >
+                {scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <RefreshCw className="h-3.5 w-3.5" />}
+                Rescan
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
@@ -188,7 +205,29 @@ export function LeetcodeScannerPanel({ resumeId }: { resumeId: string }) {
           </div>
         </div>
       ) : (
-        <ScanResult scan={scan} />
+        <>
+          {changingUsername && (
+            <div className="mt-4 flex gap-2">
+              <Input
+                value={override}
+                onChange={(e) => setOverride(e.target.value)}
+                placeholder="Enter correct LeetCode username"
+                className="h-9 rounded-md border-slate-200 text-sm"
+                disabled={scanning}
+              />
+              <Button
+                onClick={runScan}
+                disabled={scanning || !override.trim()}
+                size="sm"
+                className="h-9 gap-1.5 rounded-md bg-violet-600 px-3 text-xs font-medium text-white hover:bg-violet-700 disabled:opacity-80"
+              >
+                {scanning ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <LeetcodeMark className="h-3.5 w-3.5" />}
+                {scanning ? "Scanning…" : "Scan"}
+              </Button>
+            </div>
+          )}
+          <ScanResult scan={scan} />
+        </>
       )}
     </div>
   );
