@@ -297,7 +297,7 @@ The admin panel tracks failed analyses live. To trigger one for testing:
 
 Built with ❤️ by **Tisha**
 
-[Portfolio](https://portfolio-six-rho-73.vercel.app) · [LinkedIn](https://www.linkedin.com/in/tisha-3835a8319)
+[Portfolio](https://portfolio-six-rho-73.vercel.app) · [LinkedIn](https://www.linkedin.com/in/tisha-3835a8319) · [GitHub](https://github.com/Tisha-Coding)
 
 *Fullstack Developer Assignment — House of Edtech*
 
