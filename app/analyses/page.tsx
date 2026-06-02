@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppBackground } from "@/components/app-background";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
@@ -325,7 +326,7 @@ function RunAnalysisModal({
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!resumeId || !jobId) {
-      onError("Select both a resume and a JD");
+      onError("Please select both a resume and a job description");
       return;
     }
     setRunning(true);
@@ -396,52 +397,35 @@ function RunAnalysisModal({
         ) : (
           <form onSubmit={handleSubmit} className="mt-5 space-y-4">
             <div className="space-y-1.5">
-              <Label htmlFor="resume" className="text-sm font-medium text-slate-700">
-                Resume
-              </Label>
-              <div className="relative">
-                <select
-                  id="resume"
-                  value={resumeId}
-                  onChange={(e) => setResumeId(e.target.value)}
-                  disabled={running}
-                  required
-                  className="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
-                >
-                  <option value="">Select a resume…</option>
+              <Label className="text-sm font-medium text-slate-700">Resume</Label>
+              <Select value={resumeId} onValueChange={setResumeId} disabled={running} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a resume…" />
+                </SelectTrigger>
+                <SelectContent>
                   {resumes.map((r) => (
-                    <option key={r.id} value={r.id}>
+                    <SelectItem key={r.id} value={r.id}>
                       {r.title}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="job" className="text-sm font-medium text-slate-700">
-                Job description
-              </Label>
-              <div className="relative">
-                <select
-                  id="job"
-                  value={jobId}
-                  onChange={(e) => setJobId(e.target.value)}
-                  disabled={running}
-                  required
-                  className="h-11 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
-                >
-                  <option value="">Select a JD…</option>
+              <Label className="text-sm font-medium text-slate-700">Job description</Label>
+              <Select value={jobId} onValueChange={setJobId} disabled={running} required>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select a JD…" />
+                </SelectTrigger>
+                <SelectContent>
                   {jobs.map((j) => (
-                    <option key={j.id} value={j.id}>
-                      {j.title}
-                      {j.company ? ` · ${j.company}` : ""}
-                    </option>
+                    <SelectItem key={j.id} value={j.id}>
+                      {j.title}{j.company ? ` · ${j.company}` : ""}
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             <Button
