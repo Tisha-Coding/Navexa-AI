@@ -174,7 +174,7 @@ export async function POST(request: NextRequest) {
       data: { status: "FAILED", failedReason },
     });
     return NextResponse.json(
-      { error: "AI analysis failed. Please try again." },
+      { error: "AI analysis failed. Please try again.", analysisId: pending.id },
       { status: 500 }
     );
   }

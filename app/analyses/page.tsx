@@ -161,7 +161,12 @@ export default function AnalysesPage() {
             setRunOpen(false);
             loadAnalyses();
             showToast("success", "Analysis ready");
-            // Jump straight into the new analysis detail
+            window.location.assign(`/analyses/${id}`);
+          }}
+          onFailed={(id) => {
+            setRunOpen(false);
+            loadAnalyses();
+            showToast("error", "Analysis failed — check the detail page for the reason");
             window.location.assign(`/analyses/${id}`);
           }}
           onError={(msg) => showToast("error", msg)}
@@ -285,10 +290,12 @@ function AnalysisCard({ analysis, onDelete }: { analysis: Analysis; onDelete: ()
 function RunAnalysisModal({
   onClose,
   onSuccess,
+  onFailed,
   onError,
 }: {
   onClose: () => void;
   onSuccess: (id: string) => void;
+  onFailed: (id: string) => void;
   onError: (msg: string) => void;
 }) {
   const [resumes, setResumes] = useState<Picker[]>([]);
@@ -330,8 +337,12 @@ function RunAnalysisModal({
       });
       const data = await res.json();
       if (!res.ok) {
-        onError(data.error ?? "Analysis failed");
-        setRunning(false);
+        if (data.analysisId) {
+          onFailed(data.analysisId);
+        } else {
+          onError(data.error ?? "Analysis failed");
+          setRunning(false);
+        }
         return;
       }
       onSuccess(data.analysis.id);
