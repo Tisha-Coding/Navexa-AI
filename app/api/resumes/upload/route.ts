@@ -39,12 +39,27 @@ export async function POST(request: NextRequest) {
     }
 
     const fileBuffer = await file.arrayBuffer();
-    // Keep a separate copy for blob upload — unpdf transfers/detaches the
-    // ArrayBuffer it receives, which would leave the original unusable.
     const blobBuffer = Buffer.from(fileBuffer);
-    const pdf = await getDocumentProxy(new Uint8Array(fileBuffer.slice(0)));
-    const { text } = await extractText(pdf, { mergePages: true });
-    const rawText = Array.isArray(text) ? text.join("\n") : text;
+
+    let rawText = "";
+    try {
+      const pdf = await getDocumentProxy(new Uint8Array(fileBuffer.slice(0)));
+      const { text } = await extractText(pdf, { mergePages: true });
+      rawText = Array.isArray(text) ? text.join("\n") : text;
+    } catch (pdfErr: unknown) {
+      const msg = pdfErr instanceof Error ? pdfErr.message.toLowerCase() : "";
+      if (msg.includes("password") || msg.includes("encrypted")) {
+        return NextResponse.json(
+          { error: "PDF is password-protected. Please remove the password and try again." },
+          { status: 422 }
+        );
+      }
+      return NextResponse.json(
+        { error: "Could not read this PDF. Make sure it is a valid, text-based PDF." },
+        { status: 422 }
+      );
+    }
+
     const extractedSkills = extractSkills(rawText);
 
     const fileName = `resumes/${session.user.id}/${Date.now()}-${file.name}`;
