@@ -28,11 +28,11 @@ import {
   CheckCircle2,
   AlertTriangle,
   TrendingUp,
-  ChevronDown,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { AppBackground } from "@/components/app-background";
 import { AppHeader } from "@/components/app-header";
 import { Footer } from "@/components/footer";
@@ -560,27 +560,21 @@ function AddApplicationModal({
           <form onSubmit={handleSubmit} className="mt-4 space-y-3">
             {jobs.length > 0 && (
               <div className="space-y-1.5">
-                <Label htmlFor="job" className="text-sm font-medium text-slate-700">
+                <Label className="text-sm font-medium text-slate-700">
                   Linked job description (optional)
                 </Label>
-                <div className="relative">
-                  <select
-                    id="job"
-                    value={jobId}
-                    onChange={(e) => setJobId(e.target.value)}
-                    disabled={submitting}
-                    className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
-                  >
-                    <option value="">— none —</option>
+                <Select value={jobId} onValueChange={setJobId} disabled={submitting}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="— none —" />
+                  </SelectTrigger>
+                  <SelectContent>
                     {jobs.map((j) => (
-                      <option key={j.id} value={j.id}>
-                        {j.title}
-                        {j.company ? ` · ${j.company}` : ""}
-                      </option>
+                      <SelectItem key={j.id} value={j.id}>
+                        {j.title}{j.company ? ` · ${j.company}` : ""}
+                      </SelectItem>
                     ))}
-                  </select>
-                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-                </div>
+                  </SelectContent>
+                </Select>
               </div>
             )}
 
@@ -633,25 +627,19 @@ function AddApplicationModal({
             </div>
 
             <div className="space-y-1.5">
-              <Label htmlFor="status" className="text-sm font-medium text-slate-700">
-                Stage
-              </Label>
-              <div className="relative">
-                <select
-                  id="status"
-                  value={status}
-                  onChange={(e) => setStatus(e.target.value as Status)}
-                  disabled={submitting}
-                  className="h-10 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-9 text-sm text-slate-900 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-200 disabled:opacity-60"
-                >
+              <Label className="text-sm font-medium text-slate-700">Stage</Label>
+              <Select value={status} onValueChange={(v) => setStatus(v as Status)} disabled={submitting}>
+                <SelectTrigger className="h-10">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
                   {COLUMNS.map((c) => (
-                    <option key={c.id} value={c.id}>
+                    <SelectItem key={c.id} value={c.id}>
                       {c.label}
-                    </option>
+                    </SelectItem>
                   ))}
-                </select>
-                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
-              </div>
+                </SelectContent>
+              </Select>
             </div>
 
             <Button
